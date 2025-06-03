@@ -6,5 +6,3 @@ User management system made in `c`.
 
 <h2>Contains</h2>
 - Register
-- Logout
-- Exit 
