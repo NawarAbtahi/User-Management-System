@@ -1,3 +1,4 @@
+#include <stdatomic.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,6 +56,20 @@ void registerUser(){
   system("cls");
   printf("~-Register-~\n\n");
 
+  userFile = fopen("user.txt", "r");
+
+  if(userFile == NULL){
+    userFile = fopen("user.txt", "w");
+    
+    if(userFile != NULL){
+      fprintf(userFile, "%-10s %-16s\n", "Username", "Password");
+      fclose(userFile);
+    }
+  }
+  else{
+    fclose(userFile);
+  }
+
   userFile = fopen("user.txt", "a");
 
   while ((getchar()) != '\n');
@@ -62,8 +77,14 @@ void registerUser(){
   fgets(users.username, USERLENGTH, stdin);
   users.username[strcspn(users.username, "\n")] = 0;
 
+  printf("Enter your password: ");
+  fgets(users.password, PASSWORDLENGTH, stdin);
+  users.password[strcspn(users.password, "\n")] = 0;
 
-  fprintf(userFile, "%s\n", users.username);
+  fprintf(userFile, "%-10s %-16s\n", users.username, users.password);
+
+  printf("Registration Successful!\n\nPress any key to continue...");
+  getchar();
 
   fclose(userFile);
 }
