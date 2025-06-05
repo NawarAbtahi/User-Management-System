@@ -25,7 +25,7 @@ int main(){
     system("cls");
     printf("~-User Management System-~\n\n");
     printf("1. Register\n");
-    printf("2. Logoin\n");
+    printf("2. Login\n");
     printf("3. exit\n");
 
     printf("Enter your choice: ");
@@ -70,12 +70,40 @@ void registerUser(){
     fclose(userFile);
   }
 
-  userFile = fopen("user.txt", "a");
+  while (1) {
 
-  while ((getchar()) != '\n');
-  printf("Enter your name: ");
-  fgets(users.username, USERLENGTH, stdin);
-  users.username[strcspn(users.username, "\n")] = 0;
+    while ((getchar()) != '\n');
+    printf("Enter your name: ");
+    fgets(users.username, USERLENGTH, stdin);
+    users.username[strcspn(users.username, "\n")] = 0;
+
+    userFile = fopen("user.txt", "r");
+
+    char headerLine[100];  // buffer large enough for the header line
+    fgets(headerLine, sizeof(headerLine), userFile);
+
+    char findUser[USERLENGTH];
+    int userExists = 0;
+
+    while(fscanf(userFile, "%s %*s", findUser) == 1){
+      if(strcmp(users.username, findUser) == 0){
+        userExists = 1;
+        break;
+      }
+    }
+
+    fclose(userFile);
+
+    if(userExists){
+      printf("This username exists! Please try again.");
+      continue;
+    }
+    else{
+      break;
+    }
+  }
+
+  userFile = fopen("user.txt", "a");
 
   printf("Enter your password: ");
   fgets(users.password, PASSWORDLENGTH, stdin);
@@ -90,5 +118,59 @@ void registerUser(){
 }
 
 void loginUser(){
+  system("cls");
+  printf("~-Login-~\n\n");
 
+  while(1){
+    while ((getchar()) != '\n');
+    
+    printf("Name: ");
+    fgets(users.username, USERLENGTH, stdin);
+    users.username[strcspn(users.username, "\n")] = 0;
+
+    printf("Password: ");
+    fgets(users.password, PASSWORDLENGTH, stdin);
+    users.password[strcspn(users.password, "\n")] = 0;
+    
+    userFile = fopen("user.txt", "r");
+
+    char headerLine[100];
+    fgets(headerLine, sizeof(headerLine), userFile);
+
+    char findUser[USERLENGTH];
+    char findPassword[PASSWORDLENGTH];
+
+    int userExists = 0;
+
+    while(fscanf(userFile, "%s %s", findUser, findPassword) == 1){
+      if(strcmp(users.username, findUser) == 0 && strcmp(users.password, findPassword) == 0){
+        userExists = 1;
+        break;
+      }
+      
+      else if(strcmp(users.username, findUser) != 0 && strcmp(users.password, findPassword) == 0){
+        userExists = 1;
+        break;
+      }
+
+      else if(strcmp(users.username, findUser) == 0 && strcmp(users.password, findPassword) != 0){
+        userExists = 1;
+        break;
+      } 
+    }
+
+    fclose(userFile);
+
+    if(userExists){
+      printf("Invalid username or password.\nTry Again\n");
+      continue;
+    }
+
+    else {
+      printf("Login Successful!");
+      break;
+    }
+
+    
+  }
 }
