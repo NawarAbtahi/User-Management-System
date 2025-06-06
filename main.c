@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <conio.h>
 #define USERLENGTH 10
 #define PASSWORDLENGTH 16
 
@@ -17,6 +17,7 @@ FILE *userFile;
 
 void registerUser();
 void loginUser();
+void maskPassword(char *password);
 
 int main(){
   
@@ -106,12 +107,11 @@ void registerUser(){
   userFile = fopen("user.txt", "a");
 
   printf("Enter your password: ");
-  fgets(users.password, PASSWORDLENGTH, stdin);
-  users.password[strcspn(users.password, "\n")] = 0;
-
+  maskPassword(users.password);
+  
   fprintf(userFile, "%-10s %-16s\n", users.username, users.password);
 
-  printf("Registration Successful!\n\nPress any key to continue...");
+  printf("\nRegistration Successful!\n\nPress any key to continue...");
   getchar();
 
   fclose(userFile);
@@ -129,9 +129,8 @@ void loginUser(){
     users.username[strcspn(users.username, "\n")] = 0;
 
     printf("Password: ");
-    fgets(users.password, PASSWORDLENGTH, stdin);
-    users.password[strcspn(users.password, "\n")] = 0;
-    
+    maskPassword(users.password);
+
     userFile = fopen("user.txt", "r");
 
     char headerLine[100];
@@ -140,37 +139,55 @@ void loginUser(){
     char findUser[USERLENGTH];
     char findPassword[PASSWORDLENGTH];
 
-    int userExists = 0;
+    int loginSuccessful = 0;
 
-    while(fscanf(userFile, "%s %s", findUser, findPassword) == 1){
+    while(fscanf(userFile, "%s %s", findUser, findPassword) == 2){
       if(strcmp(users.username, findUser) == 0 && strcmp(users.password, findPassword) == 0){
-        userExists = 1;
+        loginSuccessful = 1;
         break;
       }
-      
-      else if(strcmp(users.username, findUser) != 0 && strcmp(users.password, findPassword) == 0){
-        userExists = 1;
-        break;
-      }
-
-      else if(strcmp(users.username, findUser) == 0 && strcmp(users.password, findPassword) != 0){
-        userExists = 1;
-        break;
-      } 
     }
 
     fclose(userFile);
 
-    if(userExists){
-      printf("Invalid username or password.\nTry Again\n");
-      continue;
-    }
-
-    else {
-      printf("Login Successful!");
+    if(loginSuccessful){
+      printf("\nLogin Successful!\n");
+      printf("Press any key to continue...");
+      getchar();
       break;
     }
 
-    
+    else {
+      printf("\nInvalid username or password.\nTry Again\n");
+      continue;
+    }
+ 
   }
+}
+
+void maskPassword(char *password){
+  int i = 0;
+
+  while(1){
+    char passInp = _getch();
+    
+    if(passInp == '\r'){
+      break;
+    }
+    
+    else if(passInp == '\b'){
+      if(i > 0){
+        i--;
+        printf("\b \b");
+      }
+    }
+
+    else if(i < 16){
+      password[i++] = passInp;
+      printf("*");
+    }
+  }
+
+  password[i] = '\0';
+
 }
