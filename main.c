@@ -8,7 +8,7 @@
 
 typedef struct{
   char username[USERLENGTH];
-  char password[PASSWORDLENGTH];
+  char password[PASSWORDLENGTH + 1];
 } User;
 
 User users;
@@ -182,7 +182,7 @@ void maskPassword(char *password){
       }
     }
 
-    else if(i < 16){
+    else if(i < PASSWORDLENGTH){
       password[i++] = passInp;
       printf("*");
     }
